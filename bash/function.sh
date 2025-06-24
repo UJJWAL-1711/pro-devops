@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -e
 #functions
 test(){
     name="hello"
@@ -36,3 +37,49 @@ if [[ -f $file_path ]]; then
     echo $file_path
 fi
 ###############
+
+#backup with retry
+
+bkp(){
+    if [  -f ${1}  ];then        
+        mkdir backupdir && cd backupdir
+        cp -r ${1} .
+        tar -czvf ../backup.tar.gz *
+        echo "clean $1"
+        rm -rf ../backupdir
+        echo $?
+    else
+        echo "${1} not a valid dir" 
+    fi
+}
+
+for j in $(seq 1 3);do
+    echo "try $j"
+    bkp "/Users/ujjwalrastogi/workspace/scripts/pro-devops/bash/file-check.sh"
+    if [ $? -eq 0  ];then
+        break
+    fi
+done
+########### 
+#command line arguments
+#use $1 ... $n for args
+###########
+#PID
+#kill -15 graceful, kill -9 foce kill, strace -tfp to trace syscalls by a proces, parent, child
+######
+#built in commands are faster than those which have binaries - prepackaged in shell 
+#as they dont create seperate processes for that task - can be checked with strace
+#use type command : 
+type echo
+type /usr/bin/echo
+
+# to time a command in linux use time
+time cat function.sh
+# how to get PID of current bash session
+prep -o bash
+#for all - use man bash man builtin
+
+#[[]] vs []
+#[] ~ test 
+# man [ vs man test
+
